@@ -1,0 +1,2 @@
+# Lazyfi
+wifi hacking tool
