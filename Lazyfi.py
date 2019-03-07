@@ -47,17 +47,20 @@ def banner():                                     #start screen styles
         print(colored("[1] Automatic                    *","blue"))
         print(colored("[2] Manual                       *","blue"))
         print(colored("[3] Cleanup                      *","blue"))
-        print(colored("[4] Exit                         *","blue"))
+        print(colored("[4] Uninstall                    *","blue"))
+        print(colored("[5] Exit                         *","blue"))
         print(colored("**********************************","blue"))
         opt = input(colored(">> ","blue"))
         if opt == '1':
-            print("auto")
+            automatic()
         elif opt == '2':
             print("manual")
         elif opt == '3':
             print("clean")
         elif opt == '4':
             quit()
+        elif opt == '5':
+            uninstall()
         else:
             print("not valid")
 
@@ -118,6 +121,15 @@ def install_script():
     print(colored("[PROCESS] ","green")+colored("All Done. Good To Go","blue"))
     time.sleep(2)
     banner()
+
+def automatic():
+    os.system("clear")
+    print(colored("[+] ","green")+colored("Welcome To Automatic Wifi Hack","blue"))
+    wifi = input(colored("Name Of Wifi To Hack(SSID): ","yellow"))
+    print(colored("[+] ","green")+colored("You Want To Hack","blue")+colored("{}".format(wifi),"yellow"))
+    print(colored("[INFO] ","yellow")+colored("Now Starting Enabling Mode","blue"))
+    
+
 #all functions here
 
 #call function
