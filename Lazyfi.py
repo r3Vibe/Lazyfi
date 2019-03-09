@@ -88,7 +88,7 @@ def banner_install():                             #start installing script
             print(colored("[INFO] ","yellow")+colored("Please Type A Valid Option","red"))
             banner_install()
 
-def install_script():
+def install_script():                             #install the script if not installed
     os.system("clear")
     print(colored("[PROCESS] ","green")+colored("Making lazyfi Script","blue"))
     os.system("echo '#!/bin/bash' >> lazyfi")
@@ -122,16 +122,100 @@ def install_script():
     time.sleep(2)
     banner()
 
-def automatic():
+#full automatic mode
+def automatic():                               #full automatic mode no interactions
+    global inte
     os.system("clear")
     print(colored("[+] ","green")+colored("Welcome To Automatic Wifi Hack","blue"))
-    wifi = input(colored("Name Of Wifi To Hack(SSID): ","yellow"))
+    wifi = input(colored("[+] ","green")+colored("Name Of Wifi To Hack(SSID): ","yellow"))
     print(colored("[+] ","green")+colored("You Want To Hack","blue")+colored("{}".format(wifi),"yellow"))
-    print(colored("[INFO] ","yellow")+colored("Now Starting Enabling Mode","blue"))
-    
+    print(colored("[INFO] ","yellow")+colored("Checking Interface","blue"))
+    os.system("ifconfig | grep -wl | cut -d ':' -f 1 > interface.txt")
+    interface = open("interface.txt","+r")
+    inte = interface.readlines()
+    if not inte:
+        print(colored("[X] ","red")+colored("No Interface Found Please Insert Your Wifi Adeptar!","red"))
+        quit()
+    else:
+        print(colored("[+] ","green")+colored("Your Network Interface Is: "+inte[0].rstrip(),"green"))
+        time.sleep(2)
+        check_mon()
+    #print(colored("[INFO] ","yellow")+colored("Now Starting Enabling Mode","blue"))
+
+def check_mon():                                      #check for monitor mode which is required
+    os.system("clear")
+    os.system("rm interface.txt")
+    os.system("iwconfig 2> /dev/null | grep Mode: | awk '{ print $4 }' | cut -d ':' -f 2 > check_mon.txt")
+    modename = open("check_mon.txt","+r")
+    mode = modename.readlines()
+    if mode[0].rstrip() != "Monitor":
+            print(colored("[x] ","red")+colored("Your Current Mode Is: Managed","red"))
+            time.sleep(2)
+            os.system("rm check_mon.txt")
+            monitor_enable()
+    else:
+            print(colored("[+] ","green")+colored("Your Current Mode Is: " +str(mode[0].rstrip()),"green"))
+            time.sleep(2)
+            os.system("rm check_mon.txt")
+            search()
+
+def monitor_enable():                                 #enables monitor mode if not enabled
+    global inte
+    os.system("pgrep NetworkManager > netm.txt")
+    os.system("pgrep wpa_supplicant > wpa.txt")
+    os.system("pgrep dhclient > dhc.txt")
+    time.sleep(1)
+    netman = open("netm.txt","+r")
+    wpacli = open("wpa.txt","+r")
+    dhcli = open("dhc.txt","+r")
+    net = netman.readlines()
+    wpa = wpacli.readlines()
+    dh = dhcli.readlines()
+    if not net: #kill NetworkManger
+        pass
+    else:
+        os.system("kill {}".format(net[0].rstrip()))
+    if not wpa: #kill wpa-supllicant
+        pass
+    else:
+        os.system("kill {}".format(wpa[0].rstrip()))
+    if not dh: #kill dhclient
+        pass
+    else:
+        os.system("kill {}".format(dh[0].rstrip()))
+    time.sleep(2)
+    os.system("airmon-ng start {}".format(inte[0].rstrip()))
+    time.sleep(1)
+    os.system("rm netm.txt")
+    os.system("rm wpa.txt")
+    os.system("rm dhc.txt")
+    time.sleep(2)
+    check_mon()
+
+def search():
+    pass
+#full automatic mode    
+
+def uninstall():
+    pass
+
+
 
 #all functions here
 
 #call function
 root_check()
 #call function
+
+
+
+
+###steps
+# check interface (done)
+# check for monitor mode (done)
+# activate it (done)
+# search for wifi
+# deauth
+# capture cap
+# crack cap
+#  ###
