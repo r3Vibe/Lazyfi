@@ -1,221 +1,164 @@
-#!/usr/bin/python3
+#!/bin/python3
+#Lazyfi 2.0
 
-#This script is made to hack wpa/wpa2 wifi network automatically or manually if prefered
+#imports here
+import time
+import os
+from termcolor import colored
+import getpass
+import netifaces
+from subprocess import check_output
+from threading import Thread
 
-#Author: ReVibe
-
-
-#all imports here
-import os                       #manage terminal commands
-from termcolor import colored   #prints colored text
-import time                     #pause script
-import getpass                  #get username
-#all imports here
-
-#all functions here
-def root_check():  
-    os.system("clear")                            #need root access for some functions to run properly
-    user = getpass.getuser()
-    print(colored("[INFO] ","yellow")+colored("Current User Is {}","green").format(user))
-    if user != 'root':
-        print(colored("[INFO] ","yellow")+colored("We Need root Access To Run Some Of The Functions","blue"))
-        print(colored("[INFO] ","yellow")+colored("Please Run As Root","red"))
+#check for root access
+def check_root():
+    os.system("clear")
+    username = getpass.getuser()
+    if username != 'root':
+        print(colored("please run as root",'red'))
         quit()
     else:
-        check_install()
-
-def check_install():                              #check if lazyfi already installed
-    directory = os.path.isdir("/bin/Lazyfi")
-    if directory:
-        os.system("clear")
-        banner()
-    else:
-        os.system("clear")
-        banner_install()    
-
-def banner():                                     #start screen styles
-        os.system("clear")
-        print(colored("**********************************","blue"))
-        print(colored("*   _                     __ _   *","blue"))
-        print(colored("*  | |    __ _ _____   _ / _(_)  *","blue"))
-        print(colored("*  | |   / _` |_  / | | | |_| |  *","blue"))
-        print(colored("*  | |__| (_| |/ /| |_| |  _| |  *","blue"))
-        print(colored("*  |_____\__,_/___|\__, |_| |_|  *","blue"))
-        print(colored("*                  |___/         *","blue"))
-        print(colored("*                        v 2.0   *","blue"))
-        print(colored("**********************************","blue"))
-        print(colored("[1] Automatic                    *","blue"))
-        print(colored("[2] Manual                       *","blue"))
-        print(colored("[3] Cleanup                      *","blue"))
-        print(colored("[4] Uninstall                    *","blue"))
-        print(colored("[5] Exit                         *","blue"))
-        print(colored("**********************************","blue"))
-        opt = input(colored(">> ","blue"))
-        if opt == '1':
-            automatic()
-        elif opt == '2':
-            print("manual")
-        elif opt == '3':
-            print("clean")
-        elif opt == '4':
-            quit()
-        elif opt == '5':
-            uninstall()
-        else:
-            print("not valid")
-
-def banner_install():                             #start installing script 
-        print(colored("**********************************","blue"))
-        print(colored("*   _                     __ _   *","blue"))
-        print(colored("*  | |    __ _ _____   _ / _(_)  *","blue"))
-        print(colored("*  | |   / _` |_  / | | | |_| |  *","blue"))
-        print(colored("*  | |__| (_| |/ /| |_| |  _| |  *","blue"))
-        print(colored("*  |_____\__,_/___|\__, |_| |_|  *","blue"))
-        print(colored("*                  |___/         *","blue"))
-        print(colored("*                        v 2.0   *","blue"))
-        print(colored("**********************************","blue"))
-        print(colored("[1] Install                      *","blue"))
-        print(colored("[2] Exit                         *","blue"))
-        print(colored("**********************************","blue"))
-        opt = input(colored(">> ","blue"))
-        if opt == '1':
-            install_script()
-        elif opt == '2':
-            os.system("clear")
-            quit()
-        else:
-            os.system("clear")
-            print(colored("[INFO] ","yellow")+colored("Please Type A Valid Option","red"))
-            banner_install()
-
-def install_script():                             #install the script if not installed
-    os.system("clear")
-    print(colored("[PROCESS] ","green")+colored("Making lazyfi Script","blue"))
-    os.system("echo '#!/bin/bash' >> lazyfi")
-    time.sleep(1)
-    os.system("echo 'sudo python3 /bin/Lazyfi/Lazyfi.py' >> lazyfi")
-    time.sleep(1)
-    print(colored("[PROCESS] ","green")+colored("Making /bin/Lazyfi Folder","blue"))
-    os.system("mkdir /bin/Lazyfi")
-    time.sleep(1)
-    print(colored("[PROCESS] ","green")+colored("Coping All Files To /bin/Lazyfi","blue"))
-    os.system("cp Lazyfi.py /bin/Lazyfi")
-    time.sleep(1)
-    os.system("mv lazyfi /bin/Lazyfi")
-    time.sleep(1)
-    print(colored("[PROCESS] ","green")+colored("Fixing Permissions...","blue"))
-    os.system("chmod +x /bin/Lazyfi/lazyfi")
-    time.sleep(1)
-    print(colored("[PROCESS] ","green")+colored("Adding Script To PATH","blue"))
-    os.system("export PATH=$PATH:/bin/Lazyfi")
-    time.sleep(1)
-    os.system("echo 'export PATH=$PATH:/bin/Lazyfi' >> ~/.bashrc")
-    time.sleep(1)
-    #for users other than root
-    os.system("locate .bashrc | grep home > bashrc.txt")
-    location = open("bashrc.txt","+r")
-    dirs = location.readline()
-    os.system("echo 'export PATH=$PATH:/bin/Lazyfi' >> {}".format(dirs.rstrip()))
-    time.sleep(1)
-    os.system("rm bashrc.txt")
-    print(colored("[PROCESS] ","green")+colored("All Done. Good To Go","blue"))
-    time.sleep(2)
-    banner()
-
-#full automatic mode
-def automatic():                               #full automatic mode no interactions
-    global inte
-    os.system("clear")
-    print(colored("[+] ","green")+colored("Welcome To Automatic Wifi Hack","blue"))
-    wifi = input(colored("[+] ","green")+colored("Name Of Wifi To Hack(SSID): ","yellow"))
-    print(colored("[+] ","green")+colored("You Want To Hack","blue")+colored("{}".format(wifi),"yellow"))
-    print(colored("[INFO] ","yellow")+colored("Checking Interface","blue"))
-    os.system("ifconfig | grep -wl | cut -d ':' -f 1 > interface.txt")
-    interface = open("interface.txt","+r")
-    inte = interface.readlines()
-    if not inte:
-        print(colored("[X] ","red")+colored("No Interface Found Please Insert Your Wifi Adeptar!","red"))
-        quit()
-    else:
-        print(colored("[+] ","green")+colored("Your Network Interface Is: "+inte[0].rstrip(),"green"))
+        print(colored("script has root access","green"))
         time.sleep(2)
-        check_mon()
-    #print(colored("[INFO] ","yellow")+colored("Now Starting Enabling Mode","blue"))
+        banner()
 
-def check_mon():                                      #check for monitor mode which is required
+#banner
+def banner():
     os.system("clear")
-    os.system("rm interface.txt")
-    os.system("iwconfig 2> /dev/null | grep Mode: | awk '{ print $4 }' | cut -d ':' -f 2 > check_mon.txt")
-    modename = open("check_mon.txt","+r")
-    mode = modename.readlines()
-    if mode[0].rstrip() != "Monitor":
-            print(colored("[x] ","red")+colored("Your Current Mode Is: Managed","red"))
-            time.sleep(2)
-            os.system("rm check_mon.txt")
-            monitor_enable()
+    print(colored("**********************************","blue"))
+    print(colored("*   _                     __ _   *","blue"))
+    print(colored("*  | |    __ _ _____   _ / _(_)  *","blue"))
+    print(colored("*  | |   / _` |_  / | | | |_| |  *","blue"))
+    print(colored("*  | |__| (_| |/ /| |_| |  _| |  *","blue"))
+    print(colored("*  |_____\__,_/___|\__, |_| |_|  *","blue"))
+    print(colored("*                  |___/         *","blue"))
+    print(colored("*                        v 2.0   *","blue"))
+    print(colored("**********************************","blue"))
+    print(colored("*[1] Automatic Mode              *","blue"))
+    print(colored("*[2] Manual Mode                 *","blue"))
+    print(colored("*[3] Clear                       *","blue"))
+    print(colored("*[4] Exit                        *","blue"))
+    print(colored("**********************************","blue"))
+    response = input(colored("Lazy: ","blue"))
+    if response == '1':
+        check_interface()
+    elif response == '2':
+        pass
+    elif response == '3':
+        pass
+    elif response == '4':
+        os.system("clear")
+        quit()
     else:
-            print(colored("[+] ","green")+colored("Your Current Mode Is: " +str(mode[0].rstrip()),"green"))
-            time.sleep(2)
-            os.system("rm check_mon.txt")
-            search()
-
-def monitor_enable():                                 #enables monitor mode if not enabled
+        print(colored("Please Give A Valid Input...","red"))
+        time.sleep(2)
+        banner()
+################################################################################################################################
+#                                                 FULL AUTOMATIC MODE                                                          #
+################################################################################################################################
+                                                                                                                               #     
+#check if wlan0 available                                                                                                      #
+def check_interface():                                                                                                         #
+    global wifi
     global inte
-    os.system("pgrep NetworkManager > netm.txt")
-    os.system("pgrep wpa_supplicant > wpa.txt")
-    os.system("pgrep dhclient > dhc.txt")
-    time.sleep(1)
-    netman = open("netm.txt","+r")
-    wpacli = open("wpa.txt","+r")
-    dhcli = open("dhc.txt","+r")
-    net = netman.readlines()
-    wpa = wpacli.readlines()
-    dh = dhcli.readlines()
-    if not net: #kill NetworkManger
-        pass
-    else:
-        os.system("kill {}".format(net[0].rstrip()))
-    if not wpa: #kill wpa-supllicant
-        pass
-    else:
-        os.system("kill {}".format(wpa[0].rstrip()))
-    if not dh: #kill dhclient
-        pass
-    else:
-        os.system("kill {}".format(dh[0].rstrip()))
+    wifi = input(colored("Name OF WIFI To HACk: ","blue"))
+    os.system("clear")                                                                                                         #
+    interface = netifaces.interfaces()                                                                                         #
+    inte = interface[2]
+    if 'wlan0' or 'wlan0mon' in interface:                                                                                                   #
+        print(colored("Wifi Adepter Found...","green"))                                                                        #
+        time.sleep(2)
+        print(colored("Your Interface is {}","green").format(inte))
+        time.sleep(2)                                                                                                          #
+        if inte == 'wlan0mon':
+            print(colored("Monitor Mode IS Already ON","green")) 
+            time.sleep(2)
+            callem()
+        else:
+            start_mon()                                                                                                            #
+    else:                                                                                                                      # 
+        print(colored("No Wifi Adepter Found. Please Insert Your Adepter And Run Again!","red"))                               # 
+        quit()                                                                                                                 # 
+                                                                                                                               #                                                                                                                                                                                                                # 
+#start monitor mode                                                                                                            #
+def start_mon():
+    global netman
+    global wpas
+    global dhcl
+    global inte
+    print(colored("Finding processes that could cause trouble...","yellow"))
     time.sleep(2)
-    os.system("airmon-ng start {}".format(inte[0].rstrip()))
-    time.sleep(1)
-    os.system("rm netm.txt")
-    os.system("rm wpa.txt")
-    os.system("rm dhc.txt")
+    try:
+        netmanager = check_output(["pidof","NetworkManager"]).decode("ascii").rstrip()
+        print(colored("Found NetworkManager: {}","red").format(netmanager))
+        time.sleep(2)
+        print(colored("Killing Process","yellow"))
+        os.system("kill {}".format(netmanager))
+        time.sleep(2)
+    except:
+        print(colored("NetworkManager Not Found...","green"))
+        netman = '0'
+        time.sleep(2)
+    try:
+        wpa        = check_output(["pidof","wpa_supplicant"]).decode("ascii").rstrip()
+        print(colored("Found wpa_supplicant: {}","red").format(wpa))
+        time.sleep(2)
+        print(colored("Killing Process","yellow"))
+        os.system("kill {}".format(wpa))
+        time.sleep(2)
+    except:
+        print(colored("wpa_supplicant Not Found","green"))
+        wpas = '0'
+        time.sleep(2)
+    try:
+        dhc        = check_output(["pidof","dhclient"]).decode("ascii").rstrip()
+        print(colored("Found dhclient: {}","red").format(dhc))
+        time.sleep(2)
+        print(colored("Killing Process","yellow"))
+        os.system("kill {}".format(dhc))
+        time.sleep(2)
+    except:
+        print(colored("dhclient Not Found","green"))
+        dhcl = '0'
+        time.sleep(2)
+    print(colored("Changing Interface To wlan0mon For Monitor Mode","yellow"))
     time.sleep(2)
-    check_mon()
+    os.system("airmon-ng start {}".format(inte))
+    time.sleep(2)
+    callem()
 
-def search():
+#call start and stop of airodump-ng
+def callem():
+    Thread(target = start_monitoring).start()
+    time.sleep(5)
+    Thread(target = stop_monitoring).start()
+
+#checks for given wifi
+def start_monitoring():
+    global wifi
+    chnage_interface = netifaces.interfaces()
+    change_inte = chnage_interface[2]
+    os.system("clear")
+    print(colored("Now Searching For {}","yellow").format(wifi))
+    time.sleep(2)
+    os.system("xterm -bg black -fg brown -e 'airodump-ng {} -w nearby'".format(change_inte))
+    get_wifi_details()
+
+#stops monitoring
+def stop_monitoring():
+    print("active")
+    pid = os.popen("pgrep -n xterm").read().rstrip()
+    time.sleep(5)
+    os.system("kill {}".format(pid))
+
+#get bssid channel
+def get_wifi_details():
     pass
-#full automatic mode    
 
-def uninstall():
-    pass
-
-
-
-#all functions here
-
-#call function
-root_check()
-#call function
+################################################################################################################################
+#                                                          END                                                                 # 
+################################################################################################################################                                                                  
 
 
-
-
-###steps
-# check interface (done)
-# check for monitor mode (done)
-# activate it (done)
-# search for wifi
-# deauth
-# capture cap
-# crack cap
-#  ###
+#call functions
+check_root()
