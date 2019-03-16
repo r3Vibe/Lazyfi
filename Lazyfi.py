@@ -144,7 +144,7 @@ def start_mon():
         time.sleep(2)                                                                                                                                                                                               
     except:                                                                                                                                                                                                                         
         print(colored("NetworkManager Not Found...","green"))                                                                                                                                                                                           
-        netman = '0'                                                                                                                                                                                                                    
+        netman = True                                                                                                                                                                                                                    
         time.sleep(2)                                                                                                                                                                                                          
     try:                                                                                                                                                                                                                                                                       
         wpa        = check_output(["pidof","wpa_supplicant"]).decode("ascii").rstrip()                                                                                                                                                     
@@ -155,7 +155,7 @@ def start_mon():
         time.sleep(2)                                                                                                                                                                                                              
     except:                                                                                                                                                                                                            
         print(colored("wpa_supplicant Not Found","green"))                                                                                                                                                                                                                 
-        wpas = '0'                                                                                                                                                                                      
+        wpas = True                                                                                                                                                                                      
         time.sleep(2)                                                                                                                                                                                   
     try:                                                                                                                                                                                                                
         dhc        = check_output(["pidof","dhclient"]).decode("ascii").rstrip()                                                                                                                                        
@@ -166,7 +166,7 @@ def start_mon():
         time.sleep(2)                                                                                                                                                                                                       
     except:                                                                                                                                                                                                             
         print(colored("dhclient Not Found","green"))                                                                                                                                                                                
-        dhcl = '0'                                                                                                                                                                                                              
+        dhcl = True                                                                                                                                                                                                              
         time.sleep(2)                                                                                                                                                                                                   
     print(colored("Changing Interface To wlan0mon For Monitor Mode","yellow"))                                                                                                                                                                      
     time.sleep(2)                                                                                                                                                                                                                   
@@ -224,9 +224,38 @@ def airod():
     global change_inte                                                                                                                                                            
     print(colored("Waiting For Handshake....DO NOT CLOSE IT","yellow"))                                                                                                           
     time.sleep(2)                                                                                                                                                                     
-    os.system("xterm -bg black -fg brown -e 'airodump-ng --bssid {} --channel {} --write {} {}'".format(bssid,channel,wifi,change_inte))                                       
-    pass_crack()                                                                                                                                                                      
-                                                                                                                                                                                          
+    os.system("xterm -bg black -fg brown -e 'airodump-ng --bssid {} --channel {} --write {} {}'".format(bssid,channel,wifi,change_inte))
+    restart()                                       
+
+#restart all services that were killed
+def restart():
+    global netman                                                                                                                                                                                                           
+    global wpas                                                                                                                                                                                                 
+    global dhcl
+    if netman == True:
+        print(colored("NetworkManager Was Not Killed During The Process","green"))
+        time.sleep(2)
+    else:
+        print(colored("Restarting NetworkManager...","yellow"))
+        time.sleep(2)
+        os.system("service NetworkManager restart")    
+    if wpas == True:
+        print(colored("wpa_supplicant Was Not Killed During The Process","green"))
+        time.sleep(2)
+    else:
+        print(colored("Restarting wpa_supplicant...","yellow"))
+        time.sleep(2)
+        os.system("service wpa_supplicant restart")       
+    if dhcl == True:
+        print(colored("dhclient Was Not Killed During The Process","green"))
+        time.sleep(2)      
+    else:
+        print(colored("Restarting dhclient...","yellow"))
+        time.sleep(2)
+        os.system("service dhclient restart")                  
+    print(colored("Service Restarted....","green"))
+    pass_crack()                                                                                                                                                                                    
+                                                                                                                                                                            
 #starts deauth                                                                                                                                                                        
 def deauth():                                                                                                                                                                             
     global bssid                                                                                                                                                               
