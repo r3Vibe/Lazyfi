@@ -4,11 +4,13 @@
 #imports here
 import time
 import os
-from termcolor import colored
+import glob
 import getpass
 import netifaces
 from subprocess import check_output
 from threading import Thread
+from termcolor import colored
+
 
 #check for root access
 def check_root():
@@ -305,29 +307,39 @@ def pass_crack():
 def clear():
     print(colored("Clearing Up All Files....","yellow"))
     time.sleep(2)
-    indir = os.listdir()
-    for files in indir:
-        if files.endswith('.cap'):
-            os.system("rm *.cap")
-        else:
-            print(colored("No cap File Found","red"))
-            time.sleep(1)
-        if files.endswith('.csv'):
-            os.system("rm *.csv")
-        else:
-            print(colored("No csv File Found","red"))
-            time.sleep(1)        
-        if files.endswith('.netxml'):
-            os.system("rm *.netxml")
-        else:
-            print(colored("No netxml File Found","red"))
-            time.sleep(1) 
+
+    cap = glob.glob("*.cap")        #list all cap files
+    csv = glob.glob("*.csv")        #list all csv files
+    netxml = glob.glob("*.netxml")  #list all netxml files
+
+    cap_i = 0
+    csv_i = 0
+    netxml_i = 0
+    #delete all cap files
+    while cap_i < len(cap):
+        os.system("rm {}".format(cap[cap_i]))
+        cap_i+=1
+    if len(cap) == 0:
+        print("No cap File Found...","red")
+        time.sleep(2)
+    #delete all csv files
+    while csv_i < len(csv):
+        os.system("rm {}".format(csv[csv_i]))
+        csv_i+=1
+    if len(csv) == 0:
+        print("No csv File Found...","red")
+        time.sleep(2)
+    #delete all netxml files
+    while netxml_i < len(netxml):
+        os.system("rm {}".format(netxml[netxml_i]))
+        netxml_i+=1
+    if len(netxml) == 0:
+        print("No netxml File Found...","red")
+        time.sleep(2)
+
     print(colored("Done!","green"))
     time.sleep(2)
     banner()
-
-###need to restart networkmanager and other services after capture###
-
 
 
 #call functions
