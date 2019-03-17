@@ -17,10 +17,10 @@ def check_root():
     os.system("clear")
     username = getpass.getuser()
     if username != 'root':
-        print(colored("please run as root",'red'))
+        print(colored("Please run As root",'red'))
         quit()
     else:
-        print(colored("script has root access","green"))
+        print(colored("Script Has root Access","green"))
         time.sleep(2)
         check_install()
 
@@ -92,7 +92,7 @@ def banner():
     if response == '1':
         check_interface()
     elif response == '2':
-        pass
+        manual()
     elif response == '3':
         clear()
     elif response == '4':
@@ -145,8 +145,7 @@ def start_mon():
         os.system("kill {}".format(netmanager))                                                                                                                                                                                                 
         time.sleep(2)                                                                                                                                                                                               
     except:                                                                                                                                                                                                                         
-        print(colored("NetworkManager Not Found...","green"))                                                                                                                                                                                           
-        netman = True                                                                                                                                                                                                                    
+        print(colored("NetworkManager Not Found...","green"))                                                                                                                                                                                                                                                                                                                                                                                                             
         time.sleep(2)                                                                                                                                                                                                          
     try:                                                                                                                                                                                                                                                                       
         wpa        = check_output(["pidof","wpa_supplicant"]).decode("ascii").rstrip()                                                                                                                                                     
@@ -156,8 +155,7 @@ def start_mon():
         os.system("kill {}".format(wpa))                                                                                                                                                                                       
         time.sleep(2)                                                                                                                                                                                                              
     except:                                                                                                                                                                                                            
-        print(colored("wpa_supplicant Not Found","green"))                                                                                                                                                                                                                 
-        wpas = True                                                                                                                                                                                      
+        print(colored("wpa_supplicant Not Found","green"))                                                                                                                                                                                                                                                                                                                                                                                                     
         time.sleep(2)                                                                                                                                                                                   
     try:                                                                                                                                                                                                                
         dhc        = check_output(["pidof","dhclient"]).decode("ascii").rstrip()                                                                                                                                        
@@ -167,8 +165,7 @@ def start_mon():
         os.system("kill {}".format(dhc))                                                                                                                                                                                                    
         time.sleep(2)                                                                                                                                                                                                       
     except:                                                                                                                                                                                                             
-        print(colored("dhclient Not Found","green"))                                                                                                                                                                                
-        dhcl = True                                                                                                                                                                                                              
+        print(colored("dhclient Not Found","green"))                                                                                                                                                                                                                                                                                                                                                                                            
         time.sleep(2)                                                                                                                                                                                                   
     print(colored("Changing Interface To wlan0mon For Monitor Mode","yellow"))                                                                                                                                                                      
     time.sleep(2)                                                                                                                                                                                                                   
@@ -231,31 +228,33 @@ def airod():
 
 #restart all services that were killed
 def restart():
-    global netman                                                                                                                                                                                                           
-    global wpas                                                                                                                                                                                                 
-    global dhcl
-    if netman == True:
-        print(colored("NetworkManager Was Not Killed During The Process","green"))
+    print(colored("Changing Interface Back To wlan0","yellow"))
+    time.sleep(2)
+    os.system("airmon-ng stop wlan0mon")
+    try:                                                                                                                                                                                                        
+        netmanager = check_output(["pidof","NetworkManager"]).decode("ascii").rstrip()                                                                                                                                      
+        print(colored("NetworkManager Is Running","green"))                                                                                                                                         
+        time.sleep(2)                                                                                                                                                                                                                                                            
+    except:                                                                                                                                                                                                                         
+        print(colored("Restarting NetworkManager...","yellow"))                                                                                                                                                                                           
         time.sleep(2)
-    else:
-        print(colored("Restarting NetworkManager...","yellow"))
+        os.system("service NetworkManager restart")     
+    try:                                                                                                                                                                                                        
+        wpa = check_output(["pidof","wpa_supplicant"]).decode("ascii").rstrip()                                                                                                                                      
+        print(colored("wpa_supplicant Is Running","green"))                                                                                                                                         
+        time.sleep(2)                                                                                                                                                                                                                                                            
+    except:                                                                                                                                                                                                                         
+        print(colored("Restarting wpa_supplicant...","yellow"))                                                                                                                                                                                           
         time.sleep(2)
-        os.system("service NetworkManager restart")    
-    if wpas == True:
-        print(colored("wpa_supplicant Was Not Killed During The Process","green"))
+        os.system("service wpa_supplicant restart") 
+    try:                                                                                                                                                                                                        
+        dhc = check_output(["pidof","dhclient"]).decode("ascii").rstrip()                                                                                                                                      
+        print(colored("dhclient Is Running","green"))                                                                                                                                         
+        time.sleep(2)                                                                                                                                                                                                                                                            
+    except:                                                                                                                                                                                                                         
+        print(colored("Restarting dhclient...","yellow"))                                                                                                                                                                                           
         time.sleep(2)
-    else:
-        print(colored("Restarting wpa_supplicant...","yellow"))
-        time.sleep(2)
-        os.system("service wpa_supplicant restart")       
-    if dhcl == True:
-        print(colored("dhclient Was Not Killed During The Process","green"))
-        time.sleep(2)      
-    else:
-        print(colored("Restarting dhclient...","yellow"))
-        time.sleep(2)
-        os.system("service dhclient restart")                  
-    print(colored("Service Restarted....","green"))
+        os.system("service dhclient restart") 
     pass_crack()                                                                                                                                                                                    
                                                                                                                                                                             
 #starts deauth                                                                                                                                                                        
@@ -284,20 +283,22 @@ def pass_crack():
     lower="abcdefghijklmnopqrstuvwxyz"                                                                                                                                            
     upper="ABCDEFGHIJKLMNOPQRSTUVWXYZ"                                                                                                                                            
     number="0123456789"                                                                                                                                                           
-    symbol="@_-$#%&"   
+    #symbol="@_-$#%&"   
     myhash = {}
     myhash['l'] = str(lower)
     myhash['u'] = str(upper)
     myhash['n']   = str(number)
-    myhash['s']   = str(symbol)
+    #myhash['s']   = str(symbol)
     myhash['w'] = str(wifi)
     myhash['b']   = str(bssid)                                                                                                                                           
     print(colored("Now Trying To Crack The Password...It Can Take A Long Time Depending On The Password..","yellow"))                                                          
-    time.sleep(2)                                                                                                                                                                         
-    os.system("xterm -hold -bg black -fg brown -e 'crunch 6 16 %(l)s%(u)s%(n)s%(s)s | aircrack-ng -a 2 %(w)s-01.cap -w- -b %(b)s'" %myhash)        
+    time.sleep(2)      
+    print(colored("Use ctrl + c To Stop Cracking In Case You Want To Use A Wordlist","green"))                                                                                                                                                             
+    os.system("xterm -hold -bg black -fg brown -e 'crunch 6 16 %(l)s%(u)s%(n)s | aircrack-ng -a 2 %(w)s-01.cap -w- -b %(b)s'" %myhash)        
     print(colored("Done!","green"))                                                                                                                                               
     time.sleep(2)          
-    print(colored("All Files Are Left As It Is For Further Uses. Clean Them From The Main Menu!","green"))                                                                                                                                                       
+    print(colored("All Files Are Left As It Is For Further Uses. Clean Them From The Main Menu!","green"))  
+    time.sleep(2)                                                                                                                                            
     banner()                                                                                                                                                                                                   
 
 
@@ -341,6 +342,43 @@ def clear():
     time.sleep(2)
     banner()
 
-
+#####################
+#    MANUAL MOOD   #
+#####################
+def manual():
+    os.system("clear")
+    print(colored("**********************************","blue"))
+    print(colored("*   _                     __ _   *","blue"))
+    print(colored("*  | |    __ _ _____   _ / _(_)  *","blue"))
+    print(colored("*  | |   / _` |_  / | | | |_| |  *","blue"))
+    print(colored("*  | |__| (_| |/ /| |_| |  _| |  *","blue"))
+    print(colored("*  |_____\__,_/___|\__, |_| |_|  *","blue"))
+    print(colored("*                  |___/         *","blue"))
+    print(colored("*                        v 2.0   *","blue"))
+    print(colored("**********************************","blue"))
+    print(colored("*[1] Enable Monitor Mode         *","blue"))
+    print(colored("*[2] Search For Networks         *","blue"))
+    print(colored("*[3] Get Handshake               *","blue"))
+    print(colored("*[4] Crack Password              *","blue"))
+    print(colored("*[5] Restore Network Services    *","blue"))
+    print(colored("*[6] Go Back                     *","blue"))
+    print(colored("*[7] Exit                        *","blue"))
+    print(colored("**********************************","blue"))
+    response = input(colored("Lazy: ","blue"))
+    if response == '1':
+        pass
+    elif response == '2':
+        pass
+    elif response == '3':
+        pass
+    elif response == '4':
+        pass
+    elif response == '5':
+        pass
+    elif response == '6':
+        banner()
+    elif response == '7':
+        os.system("clear")
+        quit()
 #call functions
 check_root()
