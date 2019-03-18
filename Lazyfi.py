@@ -10,6 +10,7 @@ import netifaces
 from subprocess import check_output
 from threading import Thread
 from termcolor import colored
+from xml.etree import ElementTree as ET
 
 
 #check for root access
@@ -33,7 +34,7 @@ def check_install():
         print(colored("Script Is Not Installed...","red"))
         time.sleep(2)
         print(colored("Do You Want To Install The Script?","blue"))
-        time.sleep(2)
+        time.sleep(1)
         usrrspns = input(colored("Lazyfi(Y/N): ","blue"))
         if usrrspns == 'y':
             install_script()
@@ -358,7 +359,7 @@ def manual():
     print(colored("**********************************","blue"))
     print(colored("*[1] Enable Monitor Mode         *","blue"))
     print(colored("*[2] Search For Networks         *","blue"))
-    print(colored("*[3] Get Handshake               *","blue"))
+    print(colored("*[3] Select Network To Hack      *","blue"))
     print(colored("*[4] Crack Password              *","blue"))
     print(colored("*[5] Restore Network Services    *","blue"))
     print(colored("*[6] Go Back                     *","blue"))
@@ -366,11 +367,11 @@ def manual():
     print(colored("**********************************","blue"))
     response = input(colored("Lazy: ","blue"))
     if response == '1':
-        pass
+        enb_mon()
     elif response == '2':
-        pass
+        search_net()
     elif response == '3':
-        pass
+        get_hand()
     elif response == '4':
         pass
     elif response == '5':
@@ -380,5 +381,114 @@ def manual():
     elif response == '7':
         os.system("clear")
         quit()
+
+#enables monitor for network detection
+def enb_mon():
+    interface = netifaces.interfaces()                                                                                                                                         
+    inte = interface[2]  
+    print(colored("Finding processes that could cause trouble...","yellow"))
+    time.sleep(2)
+
+    try:                                                                                                                                                                                                        
+        netmanager = check_output(["pidof","NetworkManager"]).decode("ascii").rstrip()                                                                                                                                      
+        print(colored("Found NetworkManager: {}","red").format(netmanager))                                                                                                                                         
+        time.sleep(2)                                                                                                                                                                                               
+        print(colored("Killing Process","yellow"))                                                                                                                                                                          
+        os.system("kill {}".format(netmanager))                                                                                                                                                                                                 
+        time.sleep(2)                                                                                                                                                                                               
+    except:                                                                                                                                                                                                                         
+        print(colored("NetworkManager Not Found...","green"))                                                                                                                                                                                                                                                                                                                                                                                                             
+        time.sleep(2)
+
+    try:                                                                                                                                                                                                                                                                       
+        wpa        = check_output(["pidof","wpa_supplicant"]).decode("ascii").rstrip()                                                                                                                                                     
+        print(colored("Found wpa_supplicant: {}","red").format(wpa))                                                                                                                                                       
+        time.sleep(2)                                                                                                                                                                                          
+        print(colored("Killing Process","yellow"))                                                                                                                                                                     
+        os.system("kill {}".format(wpa))                                                                                                                                                                                       
+        time.sleep(2)                                                                                                                                                                                                              
+    except:                                                                                                                                                                                                            
+        print(colored("wpa_supplicant Not Found","green"))                                                                                                                                                                                                                                                                                                                                                                                                     
+        time.sleep(2)  
+
+    try:                                                                                                                                                                                                                
+        dhc        = check_output(["pidof","dhclient"]).decode("ascii").rstrip()                                                                                                                                        
+        print(colored("Found dhclient: {}","red").format(dhc))                                                                                                                                                  
+        time.sleep(2)                                                                                                                                                                                           
+        print(colored("Killing Process","yellow"))                                                                                                                                                                              
+        os.system("kill {}".format(dhc))                                                                                                                                                                                                    
+        time.sleep(2)                                                                                                                                                                                                       
+    except:                                                                                                                                                                                                             
+        print(colored("dhclient Not Found","green"))                                                                                                                                                                                                                                                                                                                                                                                            
+        time.sleep(2)      
+    print(colored("Changing Interface To wlan0mon For Monitor Mode","yellow"))                                                                                                                                                                      
+    time.sleep(2)                                                                                                                                                                                                                   
+    os.system("airmon-ng start {}".format(inte))                                                                                                                                                                                                            
+    time.sleep(2)
+    manual()
+
+#searches for available netwroks
+def search_net():
+    interface = netifaces.interfaces()                                                                                                                                         
+    inte = interface[2]  
+    print(colored("Serching For Nearby Wifi...","yellow"))
+    time.sleep(2)
+    print(colored("Press ctrl + c To Stop The Process...","blue"))
+    time.sleep(2)
+    os.system("xterm -hold -bg black -fg brown -e 'airodump-ng --write nearby {}'".format(inte))
+    print(colored("Wifi List Will Be Available In Handshake Section....","green"))
+    time.sleep(2)
+    manual()
+
+#select a network to hack
+def get_hand():
+    global root
+    data = open("nearby-01.kismet.netxml","+r")
+    source = data.read()
+    root = ET.fromstring(source)
+    get_bssid()
+
+def get_bssid():
+    global root
+    global bssid
+    bssid = root.findall('.//BSSID')
+    get_channel()
+
+def get_channel():
+    global channel
+    channel = root.findall('.//channel')
+    get_essid()
+
+def get_essid():
+    global essid
+    essid = root.findall('.//essid')
+    printa()
+
+def printa():
+    global bssid
+    global channel
+    global essid
+    i = 0
+    print(colored("Select One Network To Start Hack","yellow"))
+    print("")
+    while i < len(essid):
+        print(colored("Network {}","green").format(i+1))
+        print(colored("ESSID   : {}","green").format(str(essid[i].text)))
+        print(colored("BSSID   : {}","green").format(str(bssid[i].text)))
+        print(colored("CHANNEl : {}","green").format(str(channel[i].text)))
+        print("")
+        time.sleep(1)
+        i+=1
+    response = input(colored("Lazy: ","blue"))
+    topri = (int(response) - 1)
+    os.system("clear")
+    print(colored("You Selected Network {}","green").format(int(response)))
+    print(colored("ESSID   : {}","green").format(str(essid[topri].text)))
+    print(colored("BSSID   : {}","green").format(str(bssid[topri].text)))
+    print(colored("CHANNEl : {}","green").format(str(channel[topri].text)))
+    print("")
+    time.sleep(2)
+    #need to get hand shek airodum and aireplay with threed
+
 #call functions
 check_root()
